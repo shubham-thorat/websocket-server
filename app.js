@@ -1,6 +1,14 @@
 const { WebSocketServer } = require('ws')
 const RedisClient = require('./redis/redisClient')
 const statsDclient = require('./statsD')
+const express = require('express')
+const app = express()
+app.listen(8000)
+
+app.get('/health', (req, res) => {
+  res.send('success')
+})
+
 const wss = new WebSocketServer({ port: 8080 });
 
 
@@ -22,13 +30,18 @@ class Count {
 
 
 wss.on('connection', function connection(ws) {
-  ws.on('message', function message(data) {
+  ws.on('message', function message(rdata) {
+    const bufferData = Buffer.from(rdata)
+    const data = JSON.parse(bufferData.toString('utf8'))
+
     const startTime = Date.now()
     statsDclient.timing('websocket_message_received', 1)
     Count.increment();
     console.log(`Message received count = ${Count.getCount()}`)
     const key = data?.key ?? 'DEFAUTL_KEY'
-    const value = data?.key ?? 'DEFAUTL_VALUE'
+    const value = data?.value ?? 'DEFAUTL_VALUE'
+    console.log("data : ", data)
+    const requestCount = data?.requestcount ?? 0
 
     RedisClient.setKey(key, value).then(response => {
       const endTime = Date.now()
@@ -36,7 +49,8 @@ wss.on('connection', function connection(ws) {
       statsDclient.timing('websocket_message_response', endTime - startTime)
       ws.send(JSON.stringify({
         'message': 'Added redis key success',
-        'response': response
+        'response': response,
+        'requestcount': requestCount
       }))
     }).catch(err => {
       console.log('Error received')
@@ -50,6 +64,10 @@ wss.on('connection', function connection(ws) {
 
   // setInterval(() => {
   //   count += 1
-  ws.send(`connected to websocket server`);
+  ws.send(JSON.stringify({
+    'message': 'connected to server',
+    'response': true,
+    'requestcount': 0,
+  }));
   // }, 2000);
 });
