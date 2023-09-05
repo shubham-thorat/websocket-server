@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "ioredis": "^5.3.2",
+    "node-statsd": "^0.1.1",
     "ws": "^8.13.0"
   },
   "devDependencies": {

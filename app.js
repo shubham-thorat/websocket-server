@@ -1,5 +1,6 @@
 const { WebSocketServer } = require('ws')
 const RedisClient = require('./redis/redisClient')
+const statsDclient = require('./statsD')
 const wss = new WebSocketServer({ port: 8080 });
 
 
@@ -22,12 +23,17 @@ class Count {
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data) {
+    const startTime = Date.now()
+    statsDclient.timing('websocket_message_received', 1)
     Count.increment();
     console.log(`Message received count = ${Count.getCount()}`)
     const key = data?.key ?? 'DEFAUTL_KEY'
     const value = data?.key ?? 'DEFAUTL_VALUE'
 
     RedisClient.setKey(key, value).then(response => {
+      const endTime = Date.now()
+      statsDclient.timing('websocket_message_send', 1)
+      statsDclient.timing('websocket_message_response', endTime - startTime)
       ws.send(JSON.stringify({
         'message': 'Added redis key success',
         'response': response
