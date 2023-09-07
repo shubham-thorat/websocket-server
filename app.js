@@ -3,13 +3,9 @@ const RedisClient = require('./redis/redisClient')
 const statsDclient = require('./statsD')
 const express = require('express')
 const app = express()
-<<<<<<< HEAD
-app.listen(8000,() => {
-console.log('running')
-=======
+
 app.listen(8000, () => {
   console.log('running')
->>>>>>> b8a7db41532ed31f8349f75cd11367101e23d80f
 })
 
 app.get('/health', (req, res) => {
