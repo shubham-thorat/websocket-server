@@ -43,9 +43,8 @@ wss.on('connection', function connection(ws) {
     console.log(`Message received count = ${Count.getCount()}`)
     const key = data?.key ?? 'DEFAUTL_KEY'
     const value = data?.value ?? 'DEFAUTL_VALUE'
-    console.log("data : ", data)
     const requestCount = data?.message_count
-
+    console.log("COUNT : ", requestCount)
     RedisClient.setKey(key, value).then(response => {
       const endTime = Date.now()
       statsDclient.timing('request_end', 1)
