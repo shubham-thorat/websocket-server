@@ -53,7 +53,8 @@ wss.on('connection', function connection(ws) {
       ws.send(JSON.stringify({
         'message': 'Added redis key success',
         'response': response,
-        'message_count': requestCount
+        'message_count': requestCount,
+        "received_time": startTime
       }))
     }).catch(err => {
       console.log('Error received')
