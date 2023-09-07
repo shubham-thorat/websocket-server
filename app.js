@@ -38,7 +38,7 @@ wss.on('connection', function connection(ws) {
     const data = JSON.parse(bufferData.toString('utf8'))
 
     const startTime = Date.now()
-    statsDclient.timing('websocket_message_received', 1)
+    statsDclient.timing('request_received', 1)
     Count.increment();
     console.log(`Message received count = ${Count.getCount()}`)
     const key = data?.key ?? 'DEFAUTL_KEY'
@@ -48,8 +48,8 @@ wss.on('connection', function connection(ws) {
 
     RedisClient.setKey(key, value).then(response => {
       const endTime = Date.now()
-      statsDclient.timing('websocket_message_send', 1)
-      statsDclient.timing('websocket_message_response', endTime - startTime)
+      statsDclient.timing('request_end', 1)
+      statsDclient.timing('response_time', endTime - startTime)
       ws.send(JSON.stringify({
         'message': 'Added redis key success',
         'response': response,
