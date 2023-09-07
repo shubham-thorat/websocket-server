@@ -3,8 +3,13 @@ const RedisClient = require('./redis/redisClient')
 const statsDclient = require('./statsD')
 const express = require('express')
 const app = express()
+<<<<<<< HEAD
 app.listen(8000,() => {
 console.log('running')
+=======
+app.listen(8000, () => {
+  console.log('running')
+>>>>>>> b8a7db41532ed31f8349f75cd11367101e23d80f
 })
 
 app.get('/health', (req, res) => {
@@ -43,7 +48,7 @@ wss.on('connection', function connection(ws) {
     const key = data?.key ?? 'DEFAUTL_KEY'
     const value = data?.value ?? 'DEFAUTL_VALUE'
     console.log("data : ", data)
-    const requestCount = data?.requestcount ?? 0
+    const requestCount = data?.message_count
 
     RedisClient.setKey(key, value).then(response => {
       const endTime = Date.now()
@@ -52,7 +57,7 @@ wss.on('connection', function connection(ws) {
       ws.send(JSON.stringify({
         'message': 'Added redis key success',
         'response': response,
-        'requestcount': requestCount
+        'message_count': requestCount
       }))
     }).catch(err => {
       console.log('Error received')
