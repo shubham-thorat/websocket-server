@@ -39,8 +39,6 @@ wss.on('connection', function connection(ws) {
 
     const startTime = Date.now()
     statsDclient.timing('request_received', 1)
-    Count.increment();
-    console.log(`Message received count = ${Count.getCount()}`)
     const key = data?.key ?? 'DEFAUTL_KEY'
     const value = data?.value ?? 'DEFAUTL_VALUE'
     const requestCount = data?.message_count
