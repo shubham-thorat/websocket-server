@@ -12,7 +12,20 @@ app.get('/health', (req, res) => {
   res.send('success')
 })
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({
+  port: 8080,
+  perMessageDeflate: {
+    zlibDeflateOptions: {
+      // See zlib defaults.
+      chunkSize: 1024,
+      memLevel: 7,
+      level: 3
+    },
+    zlibInflateOptions: {
+      chunkSize: 10 * 1024
+    },
+  }
+});
 
 
 
